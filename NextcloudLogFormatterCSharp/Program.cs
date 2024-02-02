@@ -11,11 +11,18 @@ namespace NextcloudLogFormatter
         private class LogEntry
         {
             public int? level { get; set; }
-            public required string Time { get; set; }
-            public required string User { get; set; }
-            public required string Method { get; set; }
-            public required string Url { get; set; }
-            public required string Message { get; set; }
+            public string? reqId { get; set; }
+            public string? time { get; set; }
+            public string? remoteAddr { get; set; }
+            public string? user { get; set; }
+            public string? app { get; set; }
+            public string? method { get; set; }
+            public string? url { get; set; }
+            public string? message { get; set; }
+            public string? userAgent { get; set; }
+            public Newtonsoft.Json.Linq.JObject? exception { get; set; }
+            public dynamic? data { get; set; }
+            public string? version { get; set; }
         }
 
         // Main entry point of the program
@@ -72,12 +79,18 @@ namespace NextcloudLogFormatter
 
                     // Format the log entry
                     string formattedLog = $"{logLevelText}\n";
-                    formattedLog +=
-                    formattedLog += $"Time: {logJson.Time ?? "Unknown"}\n";
-                    formattedLog += $"User: {logJson.User ?? "Unknown"}\n";
-                    formattedLog += $"Method: {logJson.Method ?? "Unknown"}\n";
-                    formattedLog += $"URL: {logJson.Url ?? "Unknown"}\n";
-                    formattedLog += $"Message: {logJson.Message ?? "Unknown"}\n";
+                    formattedLog += $"Request ID: {logJson.reqId ?? "Unknown"}\n";
+                    formattedLog += $"Time: {logJson.time ?? "Unknown"}\n";
+                    formattedLog += $"Remote Address: {logJson.remoteAddr ?? "Unknown"}\n";
+                    formattedLog += $"User: {logJson.user ?? "Unknown"}\n";
+                    formattedLog += $"App: {logJson.app ?? "Unknown"}\n";
+                    formattedLog += $"Method: {logJson.method ?? "Unknown"}\n";
+                    formattedLog += $"URL: {logJson.url ?? "Unknown"}\n";
+                    formattedLog += $"Message: {logJson.message ?? "Unknown"}\n";
+                    formattedLog += $"User Agent: {logJson.userAgent ?? "Unknown"}\n";
+                    formattedLog += $"Exception: {GetExceptionMessage(logJson.exception)}\n";
+                    formattedLog += $"Data: {logJson.data ?? "Unknown"}\n";
+                    formattedLog += $"Version: {logJson.version ?? "Unknown"}\n";
 
                     return formattedLog;
                 }
@@ -94,6 +107,12 @@ namespace NextcloudLogFormatter
                 Console.WriteLine($"Error decoding JSON: {e.Message}");
                 return null;
             }
+        }
+
+        // Helper function to extract exception message from JObject
+        static string GetExceptionMessage(Newtonsoft.Json.Linq.JObject? exception)
+        {
+            return exception?["message"]?.ToString() ?? "Unknown";
         }
 
         // Function to format and analyze logs from an input file
